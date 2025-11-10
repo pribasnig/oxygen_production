@@ -22,6 +22,29 @@ This folder contains all scripts used to convert raw NCBI FASTQ files into the f
 Raw fastw files can be downloaded from NCBI: PRJNA1358245
 
 *  trim_Oxi_trimmomatic_18.sh
+   *   Adapter trimming using trimmomatic. Output: cleaned fastq files.
+
+*  filter_Oxi.sh
+   *   Filters reads based on quality. Output: Fastq files fitlered by quality.
+
+*  sortmeRNA.sh
+   *   Removal of ribosomal RNA reads using SortMeRNA. Output: rRNA-removed high quaity FASTQ files for downstream mapping.
+
+*  hisat2_Oxi.sh
+   *   Alignment of  reads to the N. viennensis reference genome using HISAT2.
+
+*  counts_Oxi.sh
+   *   Gene-level quantification using featureCounts. Output: raw counts
+
+*  counts_24h_transcriptome.txt
+   *   counts in txt format
+
+## 2.2 Processing Scripts for 2h transcriptome (raw → counts)
+
+This folder contains all scripts used to convert raw NCBI FASTQ files into the final count tables.
+Raw fastw files can be downloaded from NCBI: PRJNA1358245
+
+*  trim_oxi_2h.sh
    *   Adapter trimming and quality filtering using trimmomatic. Output: cleaned fastq files.
 
 *  filter_Oxi.sh

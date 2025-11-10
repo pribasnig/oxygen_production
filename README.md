@@ -5,7 +5,7 @@ This repository contains oxygen production and growth data of N. viennensis unde
 
 ## 1. Analysis in R
 *  all_raw_data.csv
-   *  contains all measured oxygen production raw data analyised with script all_production_data_final.R
+   *  contains all measured oxygen production raw data, used in script all_production_data_final.R
 
 *  Recovery_growthcurve.csv
    *  contains growth data in the form of raw measured NO2 values, used in script all_production_data_final.R

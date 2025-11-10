@@ -28,14 +28,14 @@ Raw fastw files can be downloaded from NCBI: PRJNA1358245
    *   Filters reads based on quality. Output: Fastq files fitlered by quality.
 
 *  sortmeRNA.sh
-   *  Removal of ribosomal RNA reads using SortMeRNA. Output: rRNA-removed high quaity FASTQ files for downstream mapping.
+   *   Removal of ribosomal RNA reads using SortMeRNA. Output: rRNA-removed high quaity FASTQ files for downstream mapping.
 
 *  hisat2_Oxi.sh
-   *Alignment of  reads to the N. viennensis reference genome using HISAT2.
+   *   Alignment of  reads to the N. viennensis reference genome using HISAT2.
 
 *  counts_Oxi.sh
-  * Gene-level quantification using featureCounts. Output: raw counts
+   *   Gene-level quantification using featureCounts. Output: raw counts
 
 *  counts_24h_transcriptome.txt
-  *  counts in txt format
+   *   counts in txt format
 

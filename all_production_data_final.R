@@ -18,7 +18,7 @@ library(ggplot2)
 
 
 # Load combined dataset
-all_data <- read_csv("all_raw_data.csv")
+all_data <- read_csv("all_production_raw_data.csv")
 
 # Split by experiment_name (correct ordering preserved)
 experiments_raw <- split(all_data, all_data$experiment_name)
@@ -68,7 +68,7 @@ plot_fig1a <- ggplot(summary_fig1a,
         ymax = mean_oxygen + sd_oxygen),
     width = 0.4,
     linewidth = 0.35,
-    color = "grey70"     
+    color = "black"     
   ) +
   scale_color_manual(values = colors1a) +
   labs(
@@ -155,6 +155,8 @@ summary_fig1b <- fig1b %>%
   summarise(
     mean_oxygen = mean(oxygen, na.rm = TRUE),
     sd_oxygen = sd(oxygen, na.rm = TRUE),
+    min_oxygen = min(oxygen, na.rm = TRUE),
+    max_oxygen = max(oxygen, na.rm = TRUE),
     .groups = "drop"
   )
 
@@ -167,6 +169,21 @@ condition_labels1b <- c(
 summary_fig1b <- summary_fig1b %>%
   mutate(condition = condition_labels1b[condition])
 
+
+summary_fig1b <- summary_fig1b %>%
+  mutate(
+    ymin = ifelse(
+      condition == "0 mM NO2",
+      min_oxygen,
+      mean_oxygen - sd_oxygen
+    ),
+    ymax = ifelse(
+      condition == "0 mM NO2",
+      max_oxygen,
+      mean_oxygen + sd_oxygen
+    )
+  )
+
 colors1b <- c(
   `2 mM NH₄` = "#D95F02",
   `0 mM NO2` = "#1B9E77",
@@ -178,11 +195,13 @@ plot_fig1b <- ggplot(summary_fig1b,
   geom_line(size = 0.8) +
   geom_point(size = 2.2) +
   geom_errorbar(
-    aes(ymin = mean_oxygen - sd_oxygen,
-        ymax = mean_oxygen + sd_oxygen),
+    aes(
+      ymin = ymin,
+      ymax = ymax
+    ),
     width = 0.4,
     linewidth = 0.35,
-    color = "grey70"       
+    color = "black"
   ) +
   scale_color_manual(values = colors1b) +
   labs(
@@ -210,8 +229,10 @@ plot_fig1b <- ggplot(summary_fig1b,
 
 print(plot_fig1b)
 
+
+
 ggsave(
-  filename = "./figures_to_publish/Fig1b_small.pdf",
+  filename = "./figures_to_publish/Fig1c_small_remade.pdf",
   plot = plot_fig1b,
   device = "pdf",
   width = 9, height = 7, units = "cm",
@@ -219,7 +240,7 @@ ggsave(
 )
 
 ggsave(
-  filename = "./figures_to_publish/Fig1b_small.png",
+  filename = "./figures_to_publish/Fig1c_small_remade.png",
   plot = plot_fig1b,
   device = "png",
   dpi = 600,
@@ -227,7 +248,7 @@ ggsave(
 )
 
 ggsave(
-  filename = "./figures_to_publish/Fig1b_big.pdf",
+  filename = "./figures_to_publish/Fig1c_big_remade.pdf",
   plot = plot_fig1b,
   device = "pdf",
   width = 17, height = 10, units = "cm",
@@ -235,7 +256,7 @@ ggsave(
 )
 
 ggsave(
-  filename = "./figures_to_publish/Fig1b_big.png",
+  filename = "./figures_to_publish/Fig1c_big_reamde.png",
   plot = plot_fig1b,
   device = "png",
   dpi = 600,
@@ -245,18 +266,20 @@ ggsave(
 
 
 summary_fig1b_zoom <- summary_fig1b %>%
-  filter(time <= 5)
+  filter(time <= 2)
 
 plot_fig1b_zoom <- ggplot(summary_fig1b_zoom,
                           aes(x = time, y = mean_oxygen, color = condition)) +
   geom_line(size = 0.8) +
   geom_point(size = 2.2) +
   geom_errorbar(
-    aes(ymin = mean_oxygen - sd_oxygen,
-        ymax = mean_oxygen + sd_oxygen),
-    width = 0.35,
-    linewidth = 0.32,
-    color = "grey70"
+    aes(
+      ymin = ymin,
+      ymax = ymax
+    ),
+    width = 0.4,
+    linewidth = 0.35,
+    color = "black"
   ) +
   scale_color_manual(values = colors1b) +
   labs(
@@ -284,6 +307,14 @@ plot_fig1b_zoom <- ggplot(summary_fig1b_zoom,
 
 print(plot_fig1b_zoom)
 
+ggsave(
+  filename = "./figures_to_publish/Fig1b_zoom2h_small_remade.pdf",
+  plot = plot_fig1b_zoom,
+  device = "pdf",
+  width = 9, height = 7, units = "cm",
+  useDingbats = FALSE
+)
+
 #################################################################################################################################  FIGURE 1c
 
 
@@ -296,20 +327,34 @@ FigNO2conc_labels <- c(
   `10mM_NO2` = "10mM NO2"
 )
 
-
 summary_FigNO2conc <- FigNO2conc %>%
   group_by(condition, time) %>%
   summarise(
     mean_oxygen = mean(oxygen, na.rm = TRUE),
     sd_oxygen = sd(oxygen, na.rm = TRUE),
+    min_oxygen = min(oxygen, na.rm = TRUE),
+    max_oxygen = max(oxygen, na.rm = TRUE),
     .groups = "drop"
   ) %>%
   mutate(condition = FigNO2conc_labels[condition]) %>%
+  mutate(
+    ymin = ifelse(
+      condition == "Control (no NO2)",
+      min_oxygen,
+      mean_oxygen - sd_oxygen
+    ),
+    ymax = ifelse(
+      condition == "Control (no NO2)",
+      max_oxygen,
+      mean_oxygen + sd_oxygen
+    )
+  ) %>%
   filter(!is.nan(mean_oxygen))
+
 
 NO2_colors <- c(
   `Control (no NO2)` = "#1B9E77",
-  `0.05mM NO2`       = "#c5ff1a",
+  `0.05mM NO2`       = "orange",
   `10mM NO2`         = "#B30000"
 )
 
@@ -318,11 +363,13 @@ plot_fig1c <- ggplot(summary_FigNO2conc,
   geom_line(size = 0.8) +
   geom_point(size = 2.2) +
   geom_errorbar(
-    aes(ymin = mean_oxygen - sd_oxygen,
-        ymax = mean_oxygen + sd_oxygen),
+    aes(
+      ymin = ymin,
+      ymax = ymax
+    ),
     width = 0.8,
-    linewidth = 0.7,
-    color = "grey70"
+    linewidth = 0.35,
+    color = "black"
   ) +
   scale_color_manual(values = NO2_colors) +
   labs(
@@ -351,7 +398,7 @@ plot_fig1c <- ggplot(summary_FigNO2conc,
 print(plot_fig1c)
 
 
-ggsave("./figures_to_publish/Fig1c_small.pdf", plot_fig1c,
+ggsave("./figures_to_publish/Fig1b_small_remade.pdf", plot_fig1c,
        width = 9, height = 7, units = "cm", useDingbats = FALSE)
 
 ggsave("./figures_to_publish/Fig1c_small.png", plot_fig1c,
@@ -469,11 +516,14 @@ ggsave("./figures_to_publish/Fig2_big.png", plot = plot_fig2, device = "png",
 
 starvation_experiment <- experiments[["Starvation_1d_3d_repeat"]]$data
 
+
 summary_starvation_experiment <- starvation_experiment %>%
   group_by(condition, time) %>%
   summarise(
     mean_oxygen = mean(oxygen, na.rm = TRUE),
     sd_oxygen = sd(oxygen, na.rm = TRUE),
+    min_oxygen = min(oxygen, na.rm = TRUE),
+    max_oxygen = max(oxygen, na.rm = TRUE),
     .groups = "drop"
   )
 
@@ -485,7 +535,19 @@ condition_labels <- c(
 )
 
 summary_starvation_renamed <- summary_starvation_experiment %>%
-  mutate(condition = condition_labels[condition])
+  mutate(condition = condition_labels[condition]) %>%
+  mutate(
+    ymin = ifelse(
+      condition == "Control (no starvation)",
+      min_oxygen,
+      mean_oxygen - sd_oxygen
+    ),
+    ymax = ifelse(
+      condition == "Control (no starvation)",
+      max_oxygen,
+      mean_oxygen + sd_oxygen
+    )
+  )
 
 # Matching color scheme:
 # Control = oxygen producer color (#D95F02)
@@ -501,11 +563,13 @@ plot_fig3 <- ggplot(summary_starvation_renamed,
   geom_line(size = 0.8) +
   geom_point(size = 2.2) +
   geom_errorbar(
-    aes(ymin = mean_oxygen - sd_oxygen,
-        ymax = mean_oxygen + sd_oxygen),
-    width = 0.15,
+    aes(
+      ymin = ymin,
+      ymax = ymax
+    ),
+    width = 0.4,
     linewidth = 0.35,
-    color = "grey70"
+    color = "black"
   ) +
   scale_color_manual(values = starvation_colors) +
   labs(
@@ -535,7 +599,7 @@ plot_fig3 <- ggplot(summary_starvation_renamed,
 print(plot_fig3)
 
 
-ggsave("./figures_to_publish/Fig3_small.pdf", plot = plot_fig3, device = "pdf",
+ggsave("./figures_to_publish/Fig3_small_remade.pdf", plot = plot_fig3, device = "pdf",
        width = 9, height = 7, units = "cm", useDingbats = FALSE)
 
 ggsave("./figures_to_publish/Fig3_small.png", plot = plot_fig3, device = "png",
@@ -561,11 +625,13 @@ plot_fig3b <- ggplot(summary_starvation_zoom,
   )+
   geom_point(size = 2.2) +
   geom_errorbar(
-    aes(ymin = mean_oxygen - sd_oxygen,
-        ymax = mean_oxygen + sd_oxygen),
+    aes(
+      ymin = ymin,
+      ymax = ymax
+    ),
     width = 0.075,
     linewidth = 0.25,
-    color = "grey70"
+    color = "black"
   ) +
   scale_color_manual(values = starvation_colors) +
   labs(
@@ -596,7 +662,7 @@ print(plot_fig3b)
 
 
 ggsave(
-  filename = "./figures_to_publish/Fig3b_small.pdf",
+  filename = "./figures_to_publish/Fig3b_small_remade.pdf",
   plot = plot_fig3b,
   device = "pdf",
   width = 9, height = 7, units = "cm",
